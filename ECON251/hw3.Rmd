@@ -1,0 +1,252 @@
+---
+title: "ECON-UB 251"
+author: "Joy Jang"
+subtitle: Assignment 3, Fall 2023
+output:
+  word_document: default
+  pdf_document:
+    includes:
+      in_header: columns.tex
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo      = TRUE,
+                      eval      = TRUE,
+                      out.width = "50%", 
+                      fig.align = "center",
+                      comment   = "", 
+                      message   = FALSE,
+                      warning   = FALSE,
+                      "device" = "windows"
+                      )
+
+options(scipen = 100)
+```
+
+
+
+```{r, echo = FALSE, eval = TRUE}
+library(readr)
+library(knitr)
+library(dplyr)
+library(ggplot2)
+```
+
+
+1. **Panel Data**
+
+
+1.1 [**12.5%**] Save the data file that is available in *Brightspace*, load it in your rmarkdown document, and answer the following questions:
+
+```{r}
+
+setwd("C:/Users/joyja/Desktop/") 
+library(readr)
+sample <- read_delim("./assignment5_part1.csv", escape_double = FALSE, trim_ws = TRUE, show_col_types = FALSE)
+
+# scatter plot of density and vio
+library(ggplot2)
+ggplot(data=sample, aes(x=density, y=vio)) + geom_point(aes(color=state), size=1) + theme(text = element_text(size = 5))
+
+# identifying the state that stands out
+library(dplyr)
+outlying_state <- filter(sample, sample$density>7500, sample$vio>1000)
+outlying_state$state[1]
+
+```
+
++ Make a scatter plot of `density` and `vio` with the color of the dots varying by state (NB: in `R` use `ggplot2`). Discuss the results and identify the state that stands out relative to the rest (show the code that you used to identify the state).
+
+Many of the states' data are clustered together within the boundary of the violence crime rate being under 1500 and the density being under 1500. In most cases, density is not changed significantly throughout the years. However, the violent crime rates changes throughout the years, and in most cases as year passes, the violent crime rates decrease. Furthermore, the District of Columbia stands out relative to the rest of the states. The data of the District of Columbia is scattered across a large area of the violent crime rate is over 1000 and density is over 7500. 
+
+```{r}
+
+# log transformation
+ggplot(data=sample, aes(x=log(density), y=log(vio))) + geom_point(aes(color=state)) + theme(text = element_text(size = 5))
+
+ggplot(data=sample, aes(x=log(density), y=log(vio))) + geom_point(aes(color=year))
+
+```
+
++ Do the same scatter plot for `log(density)` vs `log(vio)` and discuss whether there could be any advantage from transforming the variables
+
+There could be some advantages in transforming the variables into a log form. 
+
+First, the log transformation can make the interpretation of coefficients in a regression model more straightforward. For example, if you take the logarithm of a variable, the coefficient for that variable in a regression model represents the percentage change in the dependent variable for a one percent change in the independent variable.
+
+Second, the log transformation can reduce the impact of extreme values or outliers. Since the log function compresses large values, it can help mitigate the influence of extreme observations in the analysis.
+
+
+1.2 [12.5%] Define the dataset as a panel with indexes `state` and `year`. Denote by $vio_{it}$ the violent crime rate in state $i$ in year $t$ and similarly for $shall_{it}$. Estimate the *pooled regression model* $$\log(vio_{it}) = \alpha + \beta_1 shall_{it} +u_{it}$$
+
+```{r}
+crime <- read.csv("./assignment5_part1.csv")
+crime <- select(crime, state, year, vio, shall)
+# head(crime, 5)
+
+library(plm)
+crime.pd <- pdata.frame(crime, index=c("state", "year"), drop.index=TRUE, row.names=TRUE)
+# head(crime.pd, 5)
+
+crime.pool <- plm(log(vio) ~ shall, data = crime.pd, model = "pooling")
+summary(crime.pool, vcov = vcovHC)
+
+```
++ Interpret the coefficient estimate of `shall` and discuss its significance. Which of the views about the effectiveness of the shall-carry laws discussed earlier does the estimate seem to support?
+
+Implementing the shall-issue earlier by 0.1 year is associated with a decrease of 3.149% of violent crime rates. The coefficient, having a p-value smaller than 0.01, can be considered statistically significant at a 1% level. The statistical results seems to support the opponents of right to carry guns, as they believe that guns cause more crime when it is given wide availability. We can assume that by limiting the people who can carry guns to people who got the issued permits, the people who carry guns would have decreased. And when the regression shows that limiting people who can carry guns lead to the decrease of violent crime rates, the stance of the opponents of gun rights are supported. 
+
+
+1.3 [12.5%] Estimate the panel data model with *state and time fixed effects*, that is,
+$$\log(vio_{it}) = \alpha_i + \lambda_t + \beta_1 shall_{it} + u_{it}$$
+
+```{r}
+crime.fte <- plm(log(vio) ~ shall, data = crime.pd, model = "within", effect = "twoways")
+summary(crime.fte, vcov = vcovHC)
+```
+
++ Discuss the estimate of $\beta_1$ and its significance
+
+Using the state and time fixed effects, the estimate of $\beta_1$ becomes 0.028157, which means implementing the shall-issue earlier by 0.1 year is associated with an increase of 0.281% of violent crime rates. However, the estimate cannot be considered significant, as its p-value is 0.579. 
+
++ Did the coefficient estimate of `shall` change significantly relatively to the estimate for the pooled model? why or why not?
+
+The coefficient estimate of shall changed significantly relative to the estimate of shall for the pooled model. In the pooled model, the estimate of shall was -0.3149 with a standard error of 0.11. In the model with fixed effects, the estimate of shall was 0.028 with a standard error of 0.05. We can see the coefficient estimate increased by approximately 6.7 times the standard error, assuming the standard error as 0.05. Yet, the changed estimate itself cannot be considered significant and cannot be used in the real world.
+
+
+1.4 [12.5%] Add the `rpcpi + rpcui + rpcim + density + pbm1019 + pbm2029 + pwm1019 + pwm2029` regressors to the state/time fixed effect models.  
+
+```{r}
+crime <- read.csv("./assignment5_part1.csv")
+crime2 <- select(crime, state, year, vio, shall, rpcpi, rpcui, rpcim, density, pbm1019, pbm2029, pwm1019, pwm2029)
+
+crime.pd2 <- pdata.frame(crime2, index=c("state", "year"), drop.index=TRUE, row.names=TRUE)
+# head(crime.pd2, 5)
+
+crime.fte2 <- plm(log(vio) ~ shall + rpcpi + rpcui + rpcim + density + pbm1019 + pbm2029 + pwm1019 + pwm2029, data = crime.pd2, model = "within", effect = "twoways")
+summary(crime.fte2, vcov = vcovHC)
+```
++ Discuss the change in the estimate of $\beta_1$ and its significance relative to the model with only `shall`
+
+The coefficient of shall after including the extra regressors changed to -0.0316. The amount of change is 0.059757 which is approximately equal to the standard error. The p-value decreased slightly to 0.5169; however, it is not still not statistically significant. Among the added regressors, there are some variables that are statistically significant such as 'rpcui', 'pbm2029', 'pwm1019', 'pwm2029'. This can lead to the interpretation that omitted variables can be a reason of the unfitted regression. 
+
+
+\newpage
+
+
+2. **Binary Dependent Variables**
+
+
+2.1 [10%] Produce a Table with the percentage of each employment status in April 2009 for the 5,412 individuals that were employed in April 2008. Discuss the results.
+
+  - NB: there are 435 individuals that appear neither employed or unemployed in 2009 (both variables are equal to zero meaning that these workers dropped out of the labor force); filter these observations out in the analysis
+
+```{r}
+library(readxl)
+sample2 <- read_excel("C:/Users/joyja/Desktop/assignment5_part2.xlsx")
+
+library(dplyr)
+sample2 <- filter(sample2, sample2$employed == 1 | sample2$unemployed == 1)
+
+table <- sample2 %>%
+  group_by(unemployed) %>%
+  count()
+
+percentage <- sample2 %>%
+  group_by(unemployed) %>%
+  count()/nrow(sample2)*100
+
+per_table <- cbind(table, percentage[,2])
+colnames(per_table)[3] = "percentage"
+
+per_table
+```
+
+Excluding the 435 individuals who dropped from the labor force, there is 4977 people remaining. Out of the 4977 individuals who were employed in 2008, 239 individuals were unemployed. Therefore, the percentage of the employment status in 2009 is approximately 95.198%. 
+
+
+2.2 [10%] Regress the `Employed` variable on `age` and the square of `age` using the Linear Probability Model (LPM)
+
+```{r}
+
+library(sandwich); library(lmtest); library(zoo); library(ggplot2);
+
+sample2 <- mutate(sample2, age_sq = sample2$age^2)
+
+lm_age <- lm(data = sample2, employed ~ age + age_sq)
+summary(lm_age)
+
+lm_age <- select(sample2, age, employed) %>%
+  mutate(fit = predict(lm_age, type="response"))
+
+age_plot <- ggplot(lm_age) + 
+  geom_point(aes(age, fit), size=0.8) + 
+  geom_line(aes(age, fit), color = "tomato2") +
+  theme_classic() + 
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray70") +
+  geom_hline(yintercept = 1, linetype = "dashed", color = "gray70") +
+  labs(x="Age", y="Employed")
+
+age_plot
+```
++ Plot the effect of `age` on the probability to be employed based on the estimated coefficients. What is the effect of increasing `age` by 1 year? 
+
+```{r}
+lm_age$fit[lm_age$age==31][1] - lm_age$fit[lm_age$age==30][1]
+lm_age$fit[lm_age$age==51][1] - lm_age$fit[lm_age$age==50][1]
+```
+
+The predicted probability of being employed for age 30 is 0.9429034, and the predicted probability of being employed for age 31 is 0.9458961, Thus, the effect of increasing the age from 30 to 31 involves an increase in probability by 0.00299267. 
+While, the predicted probability of being employed for age 50 is 0.9619079, and the predicted probability of being employed for age 51 is 0.9630907, Thus, the effect of increasing the age from 50 to 51 involves an decrease in probability by 0.001182718. 
+
+
++ Is there evidence of a nonlinear effect of age on the probability of employment?
+
+As we can see in the plot, we can catch evidence of a nonlinear effect of age on the probability of employment. With its peak being in the 40s, the probability of being employed is the highest in the 40s and the lowest in the 20s. This can be proven when we could observe that both estimated coefficients of 'age' and 'age_sq' are both statistically significant on a 0.1% level. 
+
+
+2.3 [10%] Estimate a logit model for `employed` conditional on  `age` and its square, `earnwke`, `race`\footnote{Define the variable as a factor, otherwise it is interpreted as an integer.}, `married`, `female`, `ne_states`, `so_states`, `ce_states`, `we_states`, `educ_lths`, `educ_hs`,   `educ_somecol`,  `educ_aa`,  `educ_bac`, and  `educ_adv`  
+
+
+```{r}
+sample2$race <- factor(sample2$race)
+# class(sample2$race)
+
+logit <- glm(employed ~ age + age_sq + earnwke + race + married + female + ne_states + so_states + ce_states + we_states + educ_lths + educ_hs + educ_somecol + educ_aa + educ_bac + educ_adv, data = sample2, family = binomial(link="logit"))
+coeftest(logit, vcov. = vcovHC, type = "HC1")
+```
+
+
++ Estimate the model and discuss the worker's characteristics that are most relevant to explain the probability of being employed in 2009.
+
+Holding everything else constant, workers who have a highest level of education that is lower than a high school graduate or is a high school graduate has a significant decrease in probability of getting employed in 2009, relative to having one's highest level of education as an advanced degree. Also, being a female would significantly increase the probability of getting employed in 2009 than a male, holding other factors constant. 
+
+
+2.4 [10%] Model the probability of being unemployed (instead of being employed as in the previous question); estimate the logit model with the demographic variables for the `unemployed` variable and discuss the characteristics of workers that significantly affected the probability of unemployment. 
+
+```{r}
+sample2$race <- factor(sample2$race)
+# class(sample2$race)
+
+logit2 <- glm(unemployed ~ age + age_sq + earnwke + race + married + female + ne_states + so_states + ce_states + we_states + educ_lths + educ_hs + educ_somecol + educ_aa + educ_bac + educ_adv, data = sample2, family = binomial(link="logit"))
+coeftest(logit2, vcov. = vcovHC, type = "HC1")
+```
+The characteristics of workers that significantly affected the probability of unemployment is similar to the previous question. To elaborate, holding everything else constant, workers who have a highest level of education that is lower than a high school graduate or is a high school graduate has a significant increase in probability of getting unemployed in 2009, relative to having one's highest level of education as an advanced degree. Also, being a female would significantly decrease the probability of getting unemployed in 2009 than a male, holding other factors constant.
+
+
+2.5 [10%] What is the probability of being employed in 2009 for an individual that is 35 year-old, with weekly earnings of 865 dollars, white, married, female, living in the North-East, and with a Bachelor degree? What is the expected difference in probability for an individual with the same characteristics, except for being a single male? Discuss.
+
+```{r}
+prob_female_logit <- logit$coefficients[1] + logit$coefficients[2] * 35 + logit$coefficients[3] * 35^2 + logit$coefficients[4] * 865 + logit$coefficients[5] * 0 + logit$coefficients[6] * 0 + logit$coefficients[7] * 1 + logit$coefficients[8] * 1 + logit$coefficients[9] * 1 + logit$coefficients[10] * 0 + logit$coefficients[11] * 0 + logit$coefficients[15] * 1
+prob_female <- 1/(1+exp(-prob_female_logit[]))
+
+prob_male_logit <- logit$coefficients[1] + logit$coefficients[2] * 35 + logit$coefficients[3] * 35^2 + logit$coefficients[4] * 865 + logit$coefficients[5] * 0 + logit$coefficients[6] * 0 + logit$coefficients[7] * 0 + logit$coefficients[8] * 0 + logit$coefficients[9] * 1 + logit$coefficients[10] * 0 + logit$coefficients[11] * 0 + logit$coefficients[15] * 1
+prob_male <- 1/(1+exp(-prob_male_logit[]))
+
+prob_female
+prob_male
+prob_female - prob_male
+```
+The probability of being employed in 2009 for an individual that is 35 year-old, with weekly earnings of 865 dollars, white, married, female, living in the North-East, and with a Bachelor degree is 0.978605. Whereas, the probability of being employed in 2009 for an individual an individual having the same conditions as the former, except for being single and a male, is 0.9561275. Therefore, the expected difference between those two individuals are 0.02247758.  
+

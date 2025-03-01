@@ -1,0 +1,190 @@
+---
+title: "ECON-UB 251"
+author: "Joy Jang"
+subtitle: Assignment 4, Fall 2023
+output:
+  word_document: default
+  pdf_document:
+    includes:
+      in_header: columns.tex
+  html_document:
+    df_print: paged
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo      = TRUE,
+                      eval      = TRUE,
+                      out.width = "90%", 
+                      fig.asp   = 0.5,
+                      fig.align = "center",
+                      comment   = "", 
+                      message   = FALSE,
+                      warning   = FALSE)
+
+options(scipen = 100)
+```
+
+```{r, echo = FALSE, eval = TRUE}
+library(readr)
+library(knitr)
+library(dplyr)
+library(ggplot2)
+```
+
+1. 
+
+```{r}
+library(alfred)
+exkous <- get_fred_series("EXKOUS")
+
+# South Korean Won to U.S. Dollar Spot Exchange Rate
+# Units: South Korean Won to One U.S. Dollar, Not Seasonally Adjusted
+# Frequency: Monthly
+# Averages of daily figures. Noon buying rates in New York City for cable transfers payable in foreign currencies
+
+head(exkous, 3)
+tail(exkous, 3)
+```
+
+
+2. 
+
+```{r}
+ggplot(exkous, aes(x=date, y=EXKOUS)) + geom_point(size = 0.8) + theme_bw()
+
+range = max(exkous$EXKOUS) - min(exkous$EXKOUS)
+max(exkous$EXKOUS)
+min(exkous$EXKOUS)
+range
+```
+
+I choose not to take a logarithm transformation because the time series does not show an exponential growth that needs to be stabilized.
+
+Range of Variation : The currency had its minimum as 669.2476 and its maximum as 1707.3 per dollar. This makes the range of variation 1038.052 won per dollar. 
+
+Persistence : This time series seems not to be persistent as the currency fluctuates on a daily basis without having long lasting effects. 
+
+Trend : Regardless of the fluctuations, the currency of won per dollar seems to have an increasing trend. 
+
+Behavior during recessions/expansions + Outliers : 
+1) During the 1997 Asia Financial Crisis which happened through December 1997 to August 2001, South Korea was going through serious recessions in which the South Korean won weakened to more than 1,700 per U.S. dollar from around 800. The disrupted trend shown during the financial crisis acts as an outlier throughout the dataset and could impact the forecasts.
+2) Before the 1997 Asia Financial Crisis, Korea's economy was highly expanding in which the currency was also highly appreciated. However, for the last 20 years, the currency has never reached that level. This could mean that the data during the period could influence the forecasting by acting as outliers. 
+
+Impact of COVID-19 : The impact of the COVID-19 pandemic does not seem to be strong, as there is not a significant outlier during that period. 
+
+
+3. 
+
+```{r}
+# full sample
+auto <- acf(select(exkous,EXKOUS), lag.max = 20, plot = FALSE, na.action = na.omit)
+auto
+
+auto.tab <- data.frame (lag = 0:20, corr = auto$acf)
+
+auto.tab %>%
+  tidyr::gather(Variable, Correlation, lag) %>%
+  ggplot(aes(x=lag, y=corr)) + geom_point() + geom_line() + 
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray80") + 
+  geom_hline(yintercept = 1, linetype = "dashed", color = "gray80") + 
+  theme_classic(base_size = 8)
+
+# excluding the pandemic
+# acf(filter(exkous, date < "2019-12-31") %>% select(EXKOUS), lag.max = 20, plot = FALSE, na.action = na.omit)
+```
+Having nearly the same autocorrelations, excluding the pandemic from the time series did not have a significant impact on the ACF compared to the full sample. 
+
+The autocorrelation coefficients appear to decay as the lag increases. Results show a diminishing correlation between observations as the time lag increases. This can lead to thinking that the time series may benefit from a model that includes autoregressive components, as it indicates a need to consider the past values when predicting future values.
+
+
+4. 
+
+```{r}
+library(aTSA)
+adf.test(exkous$EXKOUS, nlag=4)
+```
+
+The DF statistic with no drift and no trend is higher than the critical value at a 5% significance level which is -2.86. The p-value being approximately 0.7 is also much higher than 0.05. Thus, we do not reject the null hypothesis of non-stationarity and consider this time series as non-stationary. Type 2 which has drift and no trend also shows that the DF statistics are mostly higher than the critical values, and the p-value is also higher than 0.05. 
+
+Whereas, type 3, having a drift and trend, mostly shows DF statistics lower than the critical value (-2.86). Although some of the p-values are higher than 0.05, it is significantly lower compared to the previous two types. Therefore, we can conclude that the currency of won is non-stationary and it has a drift and a trend. I conclude in taking the first difference in the time series. This is because I could see an increasing trend in currency and a mean shift throughout the years. 
+
+
+5. 
+
+```{r}
+lag.max <- 12
+lag.tab <- data.frame(matrix(NA, lag.max, 3))
+colnames(lag.tab) <- c("lag", "BIC", "Rsquare")
+
+for(i in 1:lag.max)
+{
+  equation = formula(paste0("EXKOUS ~ ", paste0("lag(EXKOUS, ", 1:i, ")", collapse = "+")))
+  fit.ar.p = lm(equation, data = na.omit(exkous))
+  lag.tab[i,] <- c(i, BIC(fit.ar.p), summary(fit.ar.p)$r.square)
+}
+
+knitr::kable(lag.tab, format = "pipe")
+```
+
+Since the time series is based on a monthly record, I estimated for AR(1) until AR(12) to examine a monthly lag to a annual lag. We can see that having lag as 2 has the most significant jump in R-squared. Thus, I conclude that AR(2) is the best model. 
+
+```{r}
+ar2 = lm(EXKOUS ~ lag(EXKOUS, 2), data = exkous)
+summary(ar2)
+```
+The AR(2) model has coefficient estimates significant at a 1% level and the R-squared of the model is 0.9286. This shows that the model is overall well-fitted. However, the RSE being 55.43 indicates that there still are some variability in the data that the model does not capture.
+
+
+6. 
+
+CPI data holds importance in the currency markets as it directly influences central banks' monetary policy decisions. Higher inflation rates may prompt banks to raise interest rates, which can lead to increased demand for a currency and a higher exchange rate. Therefore, I added the growth rate of CPI to be an extra variable in predicting my time series. 
+
+```{r}
+library(alfred)
+cpi <- get_fred_series("CPALTT01KRM657N", observation_start = "1981-04-01")
+
+# Consumer Price Index: All Items: Total for Korea
+# Units: Growth rate previous period, Not Seasonally Adjusted
+# Frequency: Monthly
+
+library(tseries)
+adf.test(cpi$CPALTT01KRM657N, nlag=4)
+```
+The Dickey-Fuller test results show that we should reject the null hypothesis of non-stationarity at a 1% significance level. Furthermore, the data already being the growth rate of CPI, I believe there is no need to take on extra transformations. 
+
+```{r}
+merged <- inner_join(exkous, cpi, by = "date")
+
+adl21 <- lm(EXKOUS ~ lag(EXKOUS, 2) + lag(CPALTT01KRM657N, 1), data = merged)
+BIC(adl21)
+
+adl24 <- lm(EXKOUS ~ lag(EXKOUS, 2) + lag(CPALTT01KRM657N, 4), data = merged)
+BIC(adl24)
+```
+The BIC is smaller for the model having q as 4. Thus, I choose lag to be 4 for the growth rate of CPI.
+
+```{r}
+summary(adl24)
+```
+
+The $beta_0$(intercept) and $beta_1$(the coefficient of $Y_{t-2}$) is significant at a 0.1% level. Whereas, the lag of CPI growth rate turns out to be not significant in forecasting. Yet, the adjusted R-squared is 0.9274 which shows that the ADL model is fitted well. I predict that the coefficient of CPI growth rate would be more significant not taking differences, as the dataset itself is already the difference/growth rate of CPI on a monthly lag. 
+
+7. 
+
+```{r}
+last_obs <- tail(merged,1)
+last_obs
+
+forecasting_ar2 <- coefficients(ar2)[1] + coefficients(ar2)[2] * last_obs$EXKOUS
+forecasting_adl24 <- coefficients(adl24)[1] + coefficients(adl24)[2] * last_obs$EXKOUS + coefficients(adl24)[3] * last_obs$CPALTT01KRM657N
+
+forecast <- data.frame(matrix(NA, 1, 3))
+colnames(forecast) <- c("AR(2)", "ADL(24)", "Actual Currency")
+
+forecast[1] <- c(forecasting_ar2)
+forecast[2] <- c(forecasting_adl24)
+forecast[3] <- tail(exkous$EXKOUS,1)
+forecast
+
+```
