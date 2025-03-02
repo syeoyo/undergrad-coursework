@@ -1,27 +1,28 @@
 # coursework
 
-This repository is dedicated to my coursework in Yonsei University. 
+This repository contains coursework from my studies at Yonsei University.
 
+The following courses highlight key areas of my academic training:
 
-The courses are as following _
+- IIE2104_Deterministic Models in OR (Professor Soongeol Kwon)
 
+- IIE2107_Data Analysis (Professor Changouk Kim)
 
-<span style='background-color: #f6f8fa'> IIE2104</span>: Deterministic Models in OR
+- IIE3101_Probabilistic Model in OR (Professor Soongeol Kwon)
 
-<span style='background-color: #f6f8fa'> IIE2107</span>: Data Analysis
+- IIE3102_Production Planning (Professor Soongeol Kwon)
 
-<span style='background-color: #f6f8fa'> IIE3101</span>: Probabilistic Model in OR
+- IIE3104_Machine Learning and Industrial Applications (Professor Changouk Kim)
 
-<span style='background-color: #f6f8fa'> IIE3104</span>: Machine Learning and Industrial Applications
+- IIE3105_Supplies Management (Professor Byungdo Chung)
 
-<span style='background-color: #f6f8fa'> IIE3105</span>: Supplies Management
+- IIE4123_Analysis of Manufacturing Systems (Professor Bongju Jeong)
 
-<span style='background-color: #f6f8fa'> IIE4123</span>: Analysis of Manufacturing Systems
+- IIE4123_Deep Learning and Its Applications (Professor Hyunsoo Yoon)
 
-<span style='background-color: #f6f8fa'> IIE4123</span>: Deep Learning and Its Applications
+- ECON251_Econometrics (Professor Sebastiano Manzan - NYU)
 
-<span style='background-color: #f6f8fa'> ECON251</span>: Econometrics
+- ECO3119_Financial Engineering (Professor: Joocheol Kim)
 
-<span style='background-color: #f6f8fa'> ECO3119</span>: Financial Engineering
+- UIC4801_Senior Thesis Independent Study (Professor: Soongeol Kwon, Keeheon Lee)
 
-<span style='background-color: #f6f8fa'> UIC4801</span>: Senior Thesis Independent Study
