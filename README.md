@@ -3,7 +3,6 @@
 This repository is dedicated to my coursework in Yonsei University. 
 
 
-
 The courses are as following _
 
 
