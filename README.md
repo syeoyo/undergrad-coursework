@@ -16,9 +16,13 @@ The following courses highlight key areas of my academic training:
 
 - IIE3105_Supplies Management (Professor Byungdo Chung)
 
-- IIE4123_Analysis of Manufacturing Systems (Professor Bongju Jeong)
+- IIE4105_Analysis of Manufacturing Systems (Professor Bongju Jeong)
+
+- IIE4122_Optimization in Artificial Intelligence (Professor Biswajit Sarkar)
 
 - IIE4123_Deep Learning and Its Applications (Professor Hyunsoo Yoon)
+
+- IIE7585_Stochastic Programming (Professor Soongeol Kwon)
 
 - ECON251_Econometrics (Professor Sebastiano Manzan - NYU)
 
