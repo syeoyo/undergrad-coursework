@@ -4,29 +4,19 @@ This repository contains coursework from my studies at Yonsei University.
 
 The following courses highlight key areas of my academic training:
 
-- IIE2104_Deterministic Models in OR (Professor Soongeol Kwon)
-
-- IIE2107_Data Analysis (Professor Changouk Kim)
-
-- IIE3101_Probabilistic Model in OR (Professor Soongeol Kwon)
-
-- IIE3102_Production Planning (Professor Soongeol Kwon)
-
-- IIE3104_Machine Learning and Industrial Applications (Professor Changouk Kim)
-
-- IIE3105_Supplies Management (Professor Byungdo Chung)
-
-- IIE4105_Analysis of Manufacturing Systems (Professor Bongju Jeong)
-
-- IIE4122_Optimization in Artificial Intelligence (Professor Biswajit Sarkar)
-
-- IIE4123_Deep Learning and Its Applications (Professor Hyunsoo Yoon)
-
-- IIE7585_Stochastic Programming (Professor Soongeol Kwon)
-
-- ECON251_Econometrics (Professor Sebastiano Manzan - NYU)
-
-- ECO3119_Financial Engineering (Professor: Joocheol Kim)
-
-- UIC4801_Senior Thesis Independent Study (Professor: Soongeol Kwon, Keeheon Lee)
-
+| 학정번호         | 과목명                                           | 교수명                 |
+|---------------|---------------------------------------------|----------------------|
+| IIE2104      | Deterministic Models in OR                | Soongeol Kwon       |
+| IIE2107      | Data Analysis                              | Changouk Kim        |
+| IIE3101      | Probabilistic Model in OR                 | Soongeol Kwon       |
+| IIE3102      | Production Planning                       | Soongeol Kwon       |
+| IIE3104      | Machine Learning and Industrial Applications | Changouk Kim        |
+| IIE3105      | Supplies Management                       | Byungdo Chung       |
+| IIE3107      | Quality Engineering                       | Hyunsoo Yoon      |
+| IIE4105      | Analysis of Manufacturing Systems        | Bongju Jeong        |
+| IIE4122      | Optimization in Artificial Intelligence  | Biswajit Sarkar     |
+| IIE4123      | Deep Learning and Its Applications       | Hyunsoo Yoon        |
+| IIE7585      | Stochastic Programming                   | Soongeol Kwon       |
+| ECON251      | Econometrics                              | Sebastiano Manzan (NYU) |
+| ECO3119      | Financial Engineering                    | Joocheol Kim        |
+| UIC4801      | Senior Thesis Independent Study         | Soongeol Kwon, Keeheon Lee |
