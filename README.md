@@ -4,7 +4,7 @@ This repository contains coursework from my studies at Yonsei University.
 
 The following courses highlight key areas of my academic training:
 
-| 학정번호         | 과목명                                           | 교수명                 |
+| Course ID         | Course Title                               | Professor                 |
 |---------------|---------------------------------------------|----------------------|
 | IIE2104      | Deterministic Models in OR                | Soongeol Kwon       |
 | IIE2107      | Data Analysis                              | Changouk Kim        |
