@@ -1,50 +1,51 @@
 from math import exp, sin
 import numpy as np
-
-
 class AntColony:
     def __init__(
         self,
         distances,
-        n_ants=10,
-        n_best=5,
-        n_iterations=100,
+        num_ants=20,
+        num_best=10,
+        num_iterations=100,
         alpha=1,
         beta=2,
+        gamma=0.1,
     ):
         self.distances = distances
         self.pheromone = np.ones(self.distances.shape) / len(distances)
         self.all_inds = range(len(distances))
-        self.n_ants = n_ants
-        self.n_best = n_best
-        self.n_iterations = n_iterations
+        self.n_ants = num_ants
+        self.n_best = num_best
+        self.n_iterations = num_iterations
         self.alpha = alpha
         self.beta = beta
+        self.gamma = gamma
 
     def run(self):
         shortest_path = None
         all_time_shortest_path = ("placeholder", np.inf)
         for _ in range(self.n_iterations):
             all_paths = self.gen_all_paths()
-            self.spread_pheronome(all_paths, self.n_best)
+            self.spread_pheronome(all_paths, self.n_best, self.gamma)
             shortest_path = min(all_paths, key=lambda x: x[1])
             if shortest_path[1] < all_time_shortest_path[1]:
                 all_time_shortest_path = shortest_path
         return all_time_shortest_path
-
-    def spread_pheronome(self, all_paths, n_best):
+    
+    def spread_pheronome(self, all_paths, n_best, gamma):
+        self.pheromone *= (1 - self.gamma)
         sorted_paths = sorted(all_paths, key=lambda x: x[1])
         for path, _ in sorted_paths[:n_best]:
             for move in path:
                 self.pheromone[move] += exp(-self.distances[move]) / (
                     1 + sin(self.distances[move]) ** 2
-                )
+                ) 
 
     def gen_path_dist(self, path):
-        total_dist = 0
+        total_distance = 0
         for ele in path:
-            total_dist += self.distances[ele]
-        return total_dist
+            total_distance += self.distances[ele]
+        return total_distance
 
     def gen_all_paths(self):
         all_paths = []
@@ -69,14 +70,12 @@ class AntColony:
     def pick_move(self, pheromone, dist, visited):
         pheromone = np.copy(pheromone)
         pheromone[list(visited)] = 0
-
-        min_dist = np.inf
+        min_distance = np.inf
         move = None
         for i in self.all_inds:
-            if i not in visited and dist[i] < min_dist:
-                min_dist = dist[i]
+            if i not in visited and dist[i] < min_distance:
+                min_distance = dist[i]
                 move = i
-
         return move
 
 
@@ -100,7 +99,7 @@ if __name__ == "__main__":
         ]
     )
     ant_colony = AntColony(
-        distances, n_ants=3, n_best=2, n_iterations=100, alpha=1, beta=2
+        distances, num_ants=20, num_best=10, num_iterations=100, alpha=1, beta=2
     )
     shortest_path = ant_colony.run()
     print(f"Shortest Path: {shortest_path}")
