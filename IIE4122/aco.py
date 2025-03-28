@@ -102,4 +102,6 @@ if __name__ == "__main__":
         distances, num_ants=20, num_best=10, num_iterations=100, alpha=1, beta=2
     )
     shortest_path = ant_colony.run()
-    print(f"Shortest Path: {shortest_path}")
+    print("ANT COLONY OPTIMIZATION")
+    print(f"Shortest Path: {shortest_path[0]}")
+    print(f"Total Cost: {shortest_path[1]}")
