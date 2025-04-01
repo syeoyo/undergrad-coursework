@@ -1,4 +1,4 @@
-# Pseudo Particle Swarm Optimization
+# pseudo code for Particle Swarm Optimization
 '''
 begin
     Objective function f(x), x=(x1, x2, ..., xp)T
