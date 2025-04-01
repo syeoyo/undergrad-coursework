@@ -15,6 +15,8 @@ while(t < Max number of generations)
 end while
 Decode the results and visualizations
 end
+
+https://medium.com/aimonks/traveling-salesman-problem-tsp-using-genetic-algorithm-fea640713758
 '''
 
 # Traveling Salesman Problem using Genetic Algorithm
@@ -23,7 +25,6 @@ from itertools import permutations
 from random import shuffle
 import random
 import numpy as np
-import pandas as pd
 
 def initial_population(cities_list, n_population = 250):
     
