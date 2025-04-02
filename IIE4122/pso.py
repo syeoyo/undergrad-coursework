@@ -17,3 +17,5 @@ begin
     Output the results x_i* and g*
 end
 '''
+
+# Traveling Salesman Problem with Competition using Particle Swarm Optimization

@@ -1,6 +1,7 @@
+# Traveling Salesman Problem using Bee Algorithm
+
 from math import exp, sin
 import numpy as np
-
 class BeeAlgorithm:
     def __init__(
         self,
