@@ -1,4 +1,5 @@
 .DS_Store
+.vscode
 UIC4801/*
 !UIC4801/
 !UIC4801/der_agg_clean copy.ipynb
