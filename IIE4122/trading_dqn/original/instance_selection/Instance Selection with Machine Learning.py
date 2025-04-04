@@ -75,8 +75,6 @@ for i in range(len(test_predict)):
 # %%
 
 
-
-
 files=glob.glob('/Users/jangseohyun/Documents/workspace/undergrad-coursework/IIE4122/trading_dqn/original/train_test_set/*.csv')
 
 path = "/Users/jangseohyun/Documents/workspace/undergrad-coursework/IIE4122/trading_dqn/original/train_test_set"
@@ -243,7 +241,7 @@ for i in range(0,72):
 for i in range(0,72):
     train_data[i]=train_data[i].drop(['date','open','high','low','close','volume','change'],axis=1)
     test_data[i]=test_data[i].drop(['date','open','high','low','close','volume','change'],axis=1)
-
+    
 
 
 for i in range(len(train_data)):
