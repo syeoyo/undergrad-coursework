@@ -1,6 +1,6 @@
-# coursework
+# undergraduate coursework
 
-This repository contains coursework from my studies at Yonsei University.
+This repository contains coursework from my undergraduate studies at Yonsei University.
 
 The following courses highlight key areas of my academic training:
 
