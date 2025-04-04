@@ -16,7 +16,6 @@ The following courses highlight key areas of my academic training:
 | IIE4105      | Analysis of Manufacturing Systems        | Bongju Jeong        |
 | IIE4122      | Optimization in Artificial Intelligence  | Biswajit Sarkar     |
 | IIE4123      | Deep Learning and Its Applications       | Hyunsoo Yoon        |
-| IIE7585      | Stochastic Programming                   | Soongeol Kwon       |
 | ECON251      | Econometrics                              | Sebastiano Manzan (NYU) |
 | ECO3119      | Financial Engineering                    | Joocheol Kim        |
 | UIC4801      | Senior Thesis Independent Study         | Soongeol Kwon, Keeheon Lee |
