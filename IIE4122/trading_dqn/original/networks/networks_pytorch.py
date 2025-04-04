@@ -107,11 +107,12 @@ class Network:
 
     def save_model(self, model_path):
         if model_path is not None and self.model is not None:
-            torch.save(self.model, model_path)
+            torch.save(self.model.state_dict(), model_path)
 
     def load_model(self, model_path):
         if model_path is not None:
-            self.model = torch.load(model_path, weights_only=False)
+            self.model.load_state_dict(torch.load(model_path))
+
     
 class DNN(Network):
     @staticmethod

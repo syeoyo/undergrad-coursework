@@ -1,4 +1,5 @@
 import os
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 import sys
 import logging
 import argparse
@@ -6,8 +7,13 @@ import json
 
 '''
 /opt/anaconda3/bin/python /Users/jangseohyun/Documents/workspace/undergrad-coursework/IIE4122/trading_dqn/original/main.py --mode test --ver v3 --name 005930 --stock_code 005930 --rl_method dqn --net dnn --start_date 20180101 --end_date 20191231
+
+python /Users/jangseohyun/Documents/workspace/undergrad-coursework/IIE4122/trading_dqn/original/main.py --mode train --ver v3 --name 005930 --stock_code 005930 --rl_method dqn --net dnn --start_date 20180101 --end_date 20191231
 '''
-sys.path.append('/Users/jangseohyun/Documents/workspace/undergrad-coursework/IIE4122/rltrader')
+# sys.path.append('/Users/jangseohyun/Documents/workspace/undergrad-coursework/IIE4122/rltrader')
+os.environ['RLTRADER_BASE'] = 'C:\\Users\\jangseohyun\\Documents\\workspace\\undergrad-coursework\\IIE4122\\rltrader'
+sys.path.append(r'C:\\Users\\jangseohyun\\Documents\\workspace\\undergrad-coursework\\IIE4122\\rltrader')
+
 
 from quantylab.rltrader import settings
 from quantylab.rltrader import utils
