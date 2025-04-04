@@ -11,7 +11,7 @@ Created on Sat Oct 22 16:42:46 2022
 import glob
 import os
 import pandas as pd
-import  talib
+import talib
 import numpy as np
 
 from sklearn.model_selection import GridSearchCV
@@ -29,13 +29,15 @@ import glob
 #train_predict
 
 
-path = "C:/Users/user/Desktop/강화학습_sample_trading/dqn_dnn_epoch_300/train_set"
+# path = "C:/Users/user/Desktop/강화학습_sample_trading/dqn_dnn_epoch_300/train_set"
+path = '/Users/jangseohyun/Documents/workspace/undergrad-coursework/IIE4122/trading_dqn/original/train_set'
 
 train_file_list =os.listdir(path)
 
 train_predict =[]
+        
 for i in range(len(train_file_list)):
-    with open('C:/Users/user/Desktop/강화학습_sample_trading/dqn_dnn_epoch_300/train_set/{}'.format(train_file_list[i]),'r') as f:
+    with open('/Users/jangseohyun/Documents/workspace/undergrad-coursework/IIE4122/trading_dqn/original/train_set/{}'.format(train_file_list[i]),'r') as f:
         json_data = json.load(f)
         json_data = pd.DataFrame(json_data)
         json_data.columns = ['date','signal','confidence']
@@ -51,14 +53,14 @@ for i in range(len(train_predict)):
 #test
 #test_predict
 
-path = "C:/Users/user/Desktop/강화학습_sample_trading/dqn_dnn_epoch_300/test_set"
+path = "/Users/jangseohyun/Documents/workspace/undergrad-coursework/IIE4122/trading_dqn/original/test_set"
 
 test_file_list =os.listdir(path)
 
 test_predict =[]
 
 for i in range(len(test_file_list)):
-    with open('C:/Users/user/Desktop/강화학습_sample_trading/dqn_dnn_epoch_300/test_set/{}'.format(test_file_list[i]),'r') as f:
+    with open('/Users/jangseohyun/Documents/workspace/undergrad-coursework/IIE4122/trading_dqn/original/test_set/{}'.format(test_file_list[i]),'r') as f:
         json_data = json.load(f)
         json_data = pd.DataFrame(json_data)
         json_data.columns = ['date','signal','confidence']
@@ -75,9 +77,9 @@ for i in range(len(test_predict)):
 
 
 
-files=glob.glob('C:/Users/user/Desktop/강화학습_sample_trading/강화학습용_종목/train_test_set/*.csv')
+files=glob.glob('/Users/jangseohyun/Documents/workspace/undergrad-coursework/IIE4122/trading_dqn/original/train_test_set/*.csv')
 
-path = "C:/Users/user/Desktop/강화학습_sample_trading/강화학습용_종목/train_test_set"
+path = "/Users/jangseohyun/Documents/workspace/undergrad-coursework/IIE4122/trading_dqn/original/train_test_set"
 
 file_list =os.listdir(path)
 
@@ -86,13 +88,10 @@ len(file_list)
 df=[]
 
 for file in file_list:
-    path = "C:/Users/user/Desktop/강화학습_sample_trading/강화학습용_종목/train_test_set"
+    path = "/Users/jangseohyun/Documents/workspace/undergrad-coursework/IIE4122/trading_dqn/original/train_test_set"
     data=pd.read_csv(path+"/"+file)
     data=data.drop(['Unnamed: 0'],axis=1)
     df.append(data)
-
-
-
 
 
 

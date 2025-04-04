@@ -111,7 +111,7 @@ class Network:
 
     def load_model(self, model_path):
         if model_path is not None:
-            self.model = torch.load(model_path)
+            self.model = torch.load(model_path, weights_only=False)
     
 class DNN(Network):
     @staticmethod
