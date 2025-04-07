@@ -16,6 +16,8 @@ begin
     end while
     Output the results x_i* and g*
 end
+https://github.com/kellenf/TSP_collection
+
 '''
 
-# Traveling Salesman Problem with Competition using Particle Swarm Optimization
+# Traveling Salesman Problem using Particle Swarm Optimization
