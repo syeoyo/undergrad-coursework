@@ -18,9 +18,9 @@ python /Users/jangseohyun/Documents/workspace/undergrad-coursework/IIE4122/tradi
 python /Users/jangseohyun/Documents/workspace/undergrad-coursework/IIE4122/trading_dqn/original/main.py --mode predict --ver v3 --name 005930 --stock_code 005930 --rl_method dqn --net dnn --start_date 20180101 --end_date 20191231
 '''
 
-# sys.path.append('/Users/jangseohyun/Documents/workspace/undergrad-coursework/IIE4122/rltrader')
-os.environ['RLTRADER_BASE'] = 'C:\\Users\\jangseohyun\\Documents\\workspace\\undergrad-coursework\\IIE4122\\rltrader'
-sys.path.append(r'C:\\Users\\jangseohyun\\Documents\\workspace\\undergrad-coursework\\IIE4122\\rltrader')
+sys.path.append('/Users/jangseohyun/Documents/workspace/undergrad-coursework/IIE4122/rltrader')
+# os.environ['RLTRADER_BASE'] = 'C:\\Users\\jangseohyun\\Documents\\workspace\\undergrad-coursework\\IIE4122\\rltrader'
+# sys.path.append(r'C:\\Users\\jangseohyun\\Documents\\workspace\\undergrad-coursework\\IIE4122\\rltrader')
 
 
 from quantylab.rltrader import settings
