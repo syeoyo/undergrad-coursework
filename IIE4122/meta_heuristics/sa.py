@@ -20,17 +20,17 @@ class SA:
         return tmp
 
     def compute_distance_matrix(self, num_city, location):
-        dis_mat = np.zeros((num_city, num_city))
+        distance_matrix = np.zeros((num_city, num_city))
         for i in range(num_city):
             for j in range(num_city):
                 if i == j:
-                    dis_mat[i][j] = np.inf
+                    distance_matrix[i][j] = np.inf
                     continue
                 a = location[i]
                 b = location[j]
                 tmp = np.sqrt(sum([(x[0] - x[1]) ** 2 for x in zip(a, b)]))
-                dis_mat[i][j] = tmp
-        return dis_mat
+                distance_matrix[i][j] = tmp
+        return distance_matrix
 
     def compute_total_distance(self, path, distance_matrix):
         a = path[0]
