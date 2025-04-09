@@ -225,24 +225,26 @@ test_data=[]
 
 
 ############train/test 분리 ###
-for i in range(0,72):
+    
+# for i in range(0,72):
+for i in range(0,1):
     train=None
     train=df[i]['date'].str.contains('2013|2014|2015|2016|2017|2018')
     train_data.append(df[i][train])
     
     
-    
-for i in range(0,72):
+# for i in range(0,72):
+for i in range(0,1):
     test=None    
     test=df[i]['date'].str.contains('2019|2020')
     test_data.append(df[i][test])
     
 
-for i in range(0,72):
+# for i in range(0,72):
+for i in range(0,1):
     train_data[i]=train_data[i].drop(['date','open','high','low','close','volume','change'],axis=1)
     test_data[i]=test_data[i].drop(['date','open','high','low','close','volume','change'],axis=1)
     
-
 
 for i in range(len(train_data)):
     train_data[i]=train_data[i].reset_index(drop=True)
@@ -255,13 +257,15 @@ for i in range(len(test_data)):
 
 
 #새로운 라벨 추가(e -> 인덱스 번호)
-for i in range(0,72):
+# for i in range(0,72):
+for i in range(0,1):
     train_data[i]['position']=None
     
     
     
 #강화학습 예측값
-for i in range(0,72):
+# for i in range(0,72):
+for i in range(0,1):
     for e in train_data[i].index:
         try:
             if train_data[i]['label'][e]+train_data[i]['label'][e+1]==0:
@@ -278,7 +282,8 @@ for i in range(0,72):
 
 
 #첫날 position이 holding일 경우 buy로 변경
-for i in range(0,72):
+# for i in range(0,72):
+for i in range(0,1):
     if train_data[i]['position'][train_data[i].index[0]]=='no action':
         train_data[i]['position'][train_data[i].index[0]]='buy'
     elif train_data[i]['position'][train_data[i].index[0]]=='sell':
@@ -288,7 +293,8 @@ for i in range(0,72):
 
 
 #강제 청산
-for i in range(0,72):
+# for i in range(0,72):
+for i in range(0,1):
     for e in train_data[i].index[-1:]:
         if train_data[i]['position'][e]=='holding':
             train_data[i]['position'][e]='sell'
@@ -343,7 +349,8 @@ y_train =[]
 
 orginal_feature =[]
 
-for i in range(0,72):
+# for i in range(0,72):
+for i in range(0,1):
     x_train.append(instance_selection_train[i].drop(['label','position'],axis=1))
     orginal_feature.append(train_data[i].drop(['label','position'],axis=1))
     y_train.append(instance_selection_train[i]['label'])
@@ -351,7 +358,7 @@ for i in range(0,72):
     
 #이전 시점 feature로 채우기
 for i in range(len(instance_selection_train)) :
-    x_train[i] =  orginal_feature[i].iloc[x_train[i].index-1]
+    x_train[i] = orginal_feature[i].iloc[x_train[i].index-1]
 
 
 #x_train,y_train,x_test,y_test
@@ -362,7 +369,8 @@ y_test=[]
 
 
 #######7216
-for i in range(0,72):
+# for i in range(0,72):
+for i in range(0,1):
     x_test.append(test_data[i].drop(['label'],axis=1))
     y_test.append(test_data[i]['label']) 
 
@@ -394,7 +402,8 @@ pred_xgb=[]
 
 random_state = 0
 
-for i in range(0,72):
+# for i in range(0,72):
+for i in range(0,1):
     #logistic
     logistic =LogisticRegression(random_state= random_state)
     logistic.fit(x_train[i],y_train[i])
