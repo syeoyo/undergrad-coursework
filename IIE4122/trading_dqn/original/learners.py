@@ -26,7 +26,7 @@ class ReinforcementLearner:
                 chart_data=None, training_data=None,
                 min_trading_price=100000, max_trading_price=10000000, 
                 net='dnn', num_steps=1, lr=0.0005, 
-                discount_factor=0.9, num_epoches=1000,
+                discount_factor=0.9, num_epoches=30000,
                 balance=100000000, start_epsilon=1,
                 value_network=None, policy_network=None,
                 output_path='', reuse_models=True):
