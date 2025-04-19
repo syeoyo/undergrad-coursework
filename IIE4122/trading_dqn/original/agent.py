@@ -128,8 +128,8 @@ class Agent:
         return max(int(trading_price / self.environment.get_price()), 1)
 
     def act(self, action, confidence):
-        # if not self.validate_action(action):
-        #     action = Agent.ACTION_HOLD
+        if not self.validate_action(action):
+            action = Agent.ACTION_HOLD
 
         # 환경에서 현재 가격 얻기
         curr_price = self.environment.get_price()
@@ -178,8 +178,8 @@ class Agent:
                 self.num_sell += 1  # 매도 횟수 증가
 
         # 관망
-        # elif action == Agent.ACTION_HOLD:
-        #     self.num_hold += 1  # 관망 횟수 증가
+        elif action == Agent.ACTION_HOLD:
+            self.num_hold += 1  # 관망 횟수 증가
 
         # 포트폴리오 가치 갱신
         self.portfolio_value = self.balance + curr_price * self.num_stocks
