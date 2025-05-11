@@ -21,7 +21,6 @@ logger = logging.getLogger(settings.LOGGER_NAME)
 class ReinforcementLearner:
     __metaclass__ = abc.ABCMeta
     lock = threading.Lock()
-
     def __init__(self, rl_method='rl', stock_code=None, 
                 chart_data=None, training_data=None,
                 min_trading_price=100000, max_trading_price=10000000, 
@@ -387,7 +386,7 @@ class ReinforcementLearner:
         return result
 
 
-class DQNLearner(ReinforcementLearner):
+'''class DQNLearner(ReinforcementLearner):
     def __init__(self, *args, value_network_path=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.value_network_path = value_network_path
@@ -409,7 +408,43 @@ class DQNLearner(ReinforcementLearner):
             y_value[i] = value
             y_value[i, action] = r + self.discount_factor * value_max_next
             value_max_next = value.max()
-        return x, y_value, None
+        return x, y_value, None'''
+
+class DQNLearner(ReinforcementLearner):
+    def __init__(self, *args, value_network_path=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.value_network_path = value_network_path
+        self.init_value_network()
+
+    def get_batch(self):
+        batch_size = len(self.memory_sample) - 1  # 마지막 상태는 next_state 없음
+        x = np.zeros((batch_size, self.num_steps, self.num_features))
+        y = np.zeros((batch_size, self.agent.NUM_ACTIONS))
+
+        for i in range(batch_size):
+            state = self.memory_sample[i]
+            next_state = self.memory_sample[i + 1]
+            action = self.memory_action[i]
+            reward = self.memory_reward[i]
+            done = self.memory_done[i] if hasattr(self, "memory_done") else False
+
+            # 현재 상태의 Q-value 예측
+            q_values = self.value_network.predict(state[np.newaxis, :])[0]
+
+            # 다음 상태의 Q-value 예측
+            q_values_next = self.value_network.predict(next_state[np.newaxis, :])[0]
+
+            # Q-learning target 계산
+            target = reward
+            if not done:
+                target += self.discount_factor * np.max(q_values_next)
+
+            q_values[action] = target
+
+            x[i] = state
+            y[i] = q_values
+
+        return x, y, None
 
 
 class PolicyGradientLearner(ReinforcementLearner):
