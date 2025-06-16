@@ -1,99 +1,78 @@
-import random
-import time
-from typing import Any, List, Tuple, Dict
+import time, random
 
-class MultiplayerGame:
-    def initial_state(self): pass
-    def player(self, state): pass
-    def actions(self, state): pass
-    def result(self, state, action): pass
-    def terminal(self, state): pass
-    def utility(self, state): pass
+class Node:
+    def __init__(self, name, player, children=None, utility=None):
+        self.name, self.player, self.children, self.utility = name, player, children or [], utility
+    is_terminal = lambda self: self.utility is not None
 
-def maxn(game: MultiplayerGame) -> Tuple[List[float], List[Any], List[Any]]:
-    memo: Dict[Any, Tuple[List[float], List[Any], List[Any]]] = {}
+next_player = lambda p: (p + 1) % 3
+random_utility = lambda: tuple(random.randint(1, 100) for _ in range(3))
 
-    def search(state: Any) -> Tuple[List[float], List[Any], List[Any]]:
-        if game.terminal(state):
-            return game.utility(state), [], [state]
-        if str(state) in memo:
-            return memo[str(state)]
-        p = game.player(state)
-        best_util = None
-        best_path = []
-        best_states = []
-        for a in game.actions(state):
-            next_state = game.result(state, a)
-            util, path, states = search(next_state)
-            if (best_util is None) or (util[p] > best_util[p]):
-                best_util = util
-                best_path = [a] + path
-                best_states = [state] + states
-        memo[str(state)] = (best_util, best_path, best_states)
-        return best_util, best_path, best_states
+def build_tree(depth, max_depth, player, idx):
+    name = f"{depth}_{bin(idx)[2:]}"
+    if depth == max_depth:
+        return Node(name, None, utility=random_utility())
+    next_p = next_player(player)
+    return Node(name, player, [build_tree(depth+1, max_depth, next_p, idx*2), build_tree(depth+1, max_depth, next_p, idx*2+1)])
 
-    return search(game.initial_state())
+root = build_tree(0, 9, 0, 1)
 
-class RandomGame(MultiplayerGame):
-    def __init__(self, num_players=3, depth=3, branch=2, seed=None):
-        self.num_players = num_players
-        self.depth = depth
-        self.branch = branch
-        self.tree = {}
-        self.leaf_utilities = {}
-        if seed is not None:
-            random.seed(seed)
-        self._generate_tree('root', 0)
+class Game:
+    def __init__(self, root):
+        self.current, self.history, self.nodes_explored = root, [], 0
 
-    def _generate_tree(self, node, current_depth):
-        if current_depth == self.depth:
-            util = [random.randint(1, 10) for _ in range(self.num_players)]
-            self.leaf_utilities[node] = util
-            return
-        self.tree[node] = []
-        for i in range(self.branch):
-            child = f"{node}_{i}"
-            self.tree[node].append(child)
-            self._generate_tree(child, current_depth + 1)
+    def minimax(self, node, alpha, beta, maximizing_player, state):
+        self.nodes_explored += 1
+        if node.is_terminal():
+            return node.utility
+        player = node.player
+        best_utility = None
+        for child in node.children:
+            next_state = {'moves': state['moves']+1, 'path': state['path']+[child.name]}
+            utility = self.minimax(child, alpha, beta, player, next_state)
+            if best_utility is None or utility[player] > best_utility[player]:
+                best_utility = utility
+            if player == maximizing_player:
+                alpha = max(alpha, best_utility[player])
+            else:
+                beta = min(beta, best_utility[player])
+            if beta <= alpha:
+                break
+        return best_utility
 
-    def initial_state(self):
-        return 'root'
+    def play(self):
+        move_num = 1
+        def evaluate_child(child, player):
+            self.nodes_explored = 0
+            state = {'moves': len(self.history), 'path': self.history + [child.name]}
+            utility = self.minimax(child, float('-inf'), float('inf'), player, state)
+            return child, utility, self.nodes_explored
+        while not self.current.is_terminal():
+            player = self.current.player
+            player_label = chr(65 + player)
+            print(f"[TURN {move_num}] Player {player_label}'s turn (Current Node: {self.current.name})")
+            start_time = time.time()
+            results = [evaluate_child(child, player) for child in self.current.children]
+            best_child, best_utility, best_nodes_explored = max(
+                results,
+                key=lambda x: (x[1][player], -x[2])
+            )
+            elapsed_ms = (time.time() - start_time) * 1000
+            print(f" --> Player {player_label} chooses: {best_child.name}")
+            print(f" Step execution time: {elapsed_ms:.3f} ms")
+            print(f" Nodes exploring cost: {best_nodes_explored}")
+            print(f" Expected utility: A = {best_utility[0]}, B = {best_utility[1]}, C = {best_utility[2]}\n")
+            self.history.append(self.current.name)
+            self.current = best_child
+            move_num += 1
 
-    def player(self, state):
-        if state == 'root':
-            return 0
-        return (state.count('_')) % self.num_players
+        final_utility = self.current.utility
+        winner_idx = max(range(3), key=lambda i: final_utility[i])
+        winner_label = chr(65 + winner_idx)
+        print("[GAME END]")
+        print(f"Final Node: {self.current.name}")
+        print(f"Final Utility: A = {final_utility[0]}, B = {final_utility[1]}, C = {final_utility[2]}")
+        print(f"Winner: Player {winner_label} with utility {final_utility[winner_idx]}")
+        print(f"Path: {' -> '.join(self.history + [self.current.name])}")
 
-    def actions(self, state):
-        if state in self.tree:
-            return list(range(len(self.tree[state])))
-        return []
-
-    def result(self, state, action):
-        if state in self.tree:
-            return self.tree[state][action]
-        return state
-
-    def terminal(self, state):
-        return state in self.leaf_utilities
-
-    def utility(self, state):
-        return self.leaf_utilities.get(state, [0]*self.num_players)
-
-if __name__ == '__main__':
-    game = RandomGame(num_players=3, depth=3, branch=2, seed=42)
-    start_time = time.time()
-    util, path, states = maxn(game)
-    exec_time = time.time() - start_time
-    print('Optimal utility vector:', util)
-    print('Optimal path (step by step):')
-    for i in range(len(path)):
-        player = states[i].count('_') % game.num_players if states[i] != 'root' else 0
-        print(f"Step {i}: At node '{states[i]}', Player {player} chooses action {path[i]} -> '{states[i+1]}'")
-    print(f"Final state: '{states[-1]}' with utility {util}")
-
-    chosen_player = game.player(states[0])
-    cost = util[chosen_player]
-    print(f"Total cost (utility for first player): {cost}")
-    print(f"Number of moves: {len(path)}")
-    print(f"Execution time: {exec_time:.6f} seconds") 
+Game(root).play()
